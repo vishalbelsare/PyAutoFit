@@ -14,6 +14,18 @@ from autofit.mapper.prior.prior import Prior
 from autofit.mapper.prior_model.collection import CollectionPriorModel
 
 
+class Result:
+    def __init__(self, updated_model, collection):
+        self.updated_model = updated_model
+        self.collection = collection
+
+    def __getitem__(self, item):
+        return Result(
+            self.updated_model,
+            self.collection[item]
+        )
+
+
 class AbstractDeclarativeFactor(Analysis, ABC):
     @property
     @abstractmethod
@@ -107,7 +119,8 @@ class AbstractDeclarativeFactor(Analysis, ABC):
 
     def _make_ep_optimiser(
             self,
-            optimiser: AbstractFactorOptimiser
+            optimiser: AbstractFactorOptimiser,
+            **kwargs
     ) -> EPOptimiser:
         return EPOptimiser(
             self.graph,
@@ -116,19 +129,23 @@ class AbstractDeclarativeFactor(Analysis, ABC):
                 factor: factor.optimiser
                 for factor in self.model_factors
                 if factor.optimiser is not None
-            }
+            },
+            **kwargs
         )
 
     def optimise(
             self,
-            optimiser: AbstractFactorOptimiser
-    ) -> CollectionPriorModel:
+            optimiser: AbstractFactorOptimiser,
+            max_steps=100,
+            **kwargs
+    ) -> Result:
         """
         Use an EP Optimiser to optimise the graph associated with this collection
         of factors and create a Collection to represent the results.
 
         Parameters
         ----------
+        max_steps
         optimiser
             An optimiser that acts on graphs
 
@@ -137,10 +154,12 @@ class AbstractDeclarativeFactor(Analysis, ABC):
         A collection of prior models
         """
         opt = self._make_ep_optimiser(
-            optimiser
+            optimiser,
+            **kwargs
         )
         updated_model = opt.run(
-            self.mean_field_approximation()
+            self.mean_field_approximation(),
+            max_steps=max_steps
         )
 
         collection = CollectionPriorModel({
@@ -156,8 +175,12 @@ class AbstractDeclarativeFactor(Analysis, ABC):
             in collection.priors
         }
 
-        return collection.gaussian_prior_model_for_arguments(
+        collection = collection.gaussian_prior_model_for_arguments(
             arguments
+        )
+        return Result(
+            updated_model=updated_model,
+            collection=collection
         )
 
     def visualize(

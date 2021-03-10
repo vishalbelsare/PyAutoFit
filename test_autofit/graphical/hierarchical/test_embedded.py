@@ -8,7 +8,7 @@ from autofit.mock.mock import Gaussian
 from test_autofit.graphical.gaussian.model import Analysis
 
 x = np.arange(100)
-n = 1
+n = 2
 
 should_plot = True
 
@@ -24,7 +24,7 @@ def make_centre_model():
             sigma=10
         ),
         sigma=af.GaussianPrior(
-            mean=10,
+            mean=20,
             sigma=5
         )
     )
@@ -51,7 +51,7 @@ def test_hierarchical_factor(
 
     laplace = g.LaplaceFactorOptimiser()
 
-    gaussian = factor.optimise(laplace)
+    gaussian = factor.optimise(laplace).collection
     assert gaussian.instance_from_prior_medians().mean == pytest.approx(50, abs=0.1)
 
 
@@ -80,7 +80,7 @@ def generate_data(
         gaussian = Gaussian(
             centre=centre,
             intensity=20,
-            sigma=5,
+            sigma=10,
         )
 
         data.append(
@@ -102,49 +102,55 @@ def test_model_factor(
         data,
         centres
 ):
-    y = data[0]
     centre_argument = af.GaussianPrior(
         mean=50,
-        sigma=20
+        sigma=2
     )
     prior_model = af.PriorModel(
         Gaussian,
         centre=centre_argument,
         intensity=20,
-        sigma=5
+        sigma=2
     )
     factor = g.AnalysisFactor(
         prior_model,
         analysis=Analysis(
-            x=x,
-            y=y
+            centre=centres[0]
         )
     )
+
+    xs = np.linspace(-100, 100)
+    loglikes = [factor({centre_argument: x}) for x in xs]
+    plt.plot(xs, loglikes)
+    plt.show()
+
     laplace = g.LaplaceFactorOptimiser()
 
-    gaussian = factor.optimise(laplace)
-    assert gaussian.centre.mean == pytest.approx(centres[0], abs=0.1)
+    gaussian = factor.optimise(laplace).collection
+    assert gaussian.centre.mean == pytest.approx(centres[0], abs=0.5)
 
 
 def test_full_fit(centre_model, data, centres):
     graph = g.FactorGraphModel()
-    for i, y in enumerate(data):
+    for centre in centres:
         centre_argument = af.GaussianPrior(
             mean=50,
-            sigma=20
+            sigma=2
         )
         prior_model = af.PriorModel(
             Gaussian,
             centre=centre_argument,
-            intensity=20,
-            sigma=5
+            intensity=af.GaussianPrior(
+                mean=20,
+                sigma=2
+            ),
+            sigma=2
         )
         graph.add(
             g.AnalysisFactor(
                 prior_model,
                 analysis=Analysis(
-                    x=x,
-                    y=y
+                    centre
                 )
             )
         )
@@ -157,7 +163,39 @@ def test_full_fit(centre_model, data, centres):
 
     laplace = g.LaplaceFactorOptimiser()
 
-    collection = graph.optimise(laplace)
+    history = g.expectation_propagation.EPHistory()
+
+    collection = graph.optimise(
+        laplace,
+        max_steps=10,
+        callback=history
+    ).collection
+
+    # plt.plot(
+    #     [
+    #         meanfield.log_evidence
+    #         for meanfield in history.history.values()
+    #     ]
+    # )
+    i = np.arange(len(history.history))
+
+    f, (ax1, ax2) = plt.subplots(2)
+    ax1.plot([meanfield.log_evidence for meanfield in history.history.values()])
+
+    for variable in set(graph.prior_model.priors):
+        ax2.errorbar(
+            i,
+            [meanfield.mean_field[variable].mean for meanfield in history.history.values()],
+            [meanfield.mean_field[variable].sigma for meanfield in history.history.values()],
+            label=".".join(
+                graph.prior_model.path_for_prior(
+                    variable
+                )
+            )
+        )
+
+    ax2.legend()
+    plt.show()
 
     for gaussian, centre in zip(
             collection.with_prefix(
@@ -167,5 +205,5 @@ def test_full_fit(centre_model, data, centres):
     ):
         assert gaussian.instance_from_prior_medians().centre == pytest.approx(
             centre,
-            abs=0.1
+            abs=0.5
         )

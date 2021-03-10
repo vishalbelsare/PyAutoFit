@@ -3,7 +3,24 @@ import pytest
 
 import autofit as af
 import autofit.graphical as ep
-from test_autofit.graphical.gaussian.model import Gaussian, make_data, Analysis
+from test_autofit.graphical.gaussian.model import Gaussian, make_data
+
+
+class Analysis:
+    def __init__(self, x, y, sigma=.04):
+        self.x = x
+        self.y = y
+        self.sigma = sigma
+
+    def log_likelihood_function(self, instance: Gaussian) -> np.array:
+        """
+        This function takes an instance created by the PriorModel and computes the
+        likelihood that it fits the data.
+        """
+        y_model = instance(self.x)
+
+        likelihood_array = -0.5 * np.square(y_model - self.y)
+        return np.sum(likelihood_array / self.sigma**2)
 
 
 @pytest.fixture(
@@ -161,7 +178,7 @@ def test_optimise_factor_model(
     """
     laplace = ep.LaplaceFactorOptimiser()
 
-    collection = factor_model.optimise(laplace)
+    collection = factor_model.optimise(laplace).collection
 
     """
     And what we get back is actually a PriorModelCollection
@@ -191,7 +208,7 @@ def test_gaussian():
     )
 
     laplace = ep.LaplaceFactorOptimiser()
-    model = factor_model.optimise(laplace)
+    model = factor_model.optimise(laplace).collection
 
     assert model.centre.mean == pytest.approx(50, rel=0.1)
     assert model.intensity.mean == pytest.approx(25, rel=0.1)

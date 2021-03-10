@@ -11,11 +11,6 @@ def _gaussian(x, centre, intensity, sigma):
 _norm = stats.norm(loc=0, scale=1.0)
 
 
-# TODO: use autofit likelihood
-def _likelihood(z, y):
-    return np.multiply(-0.5, np.square(np.subtract(z, y)))
-
-
 class Profile:
     def __init__(self, centre=0.0, intensity=0.01):
         """Represents an Abstract 1D profile.
@@ -79,10 +74,14 @@ def make_data(gaussian, x):
     return y
 
 
+# TODO: use autofit likelihood
+def _likelihood(z, y):
+    return np.multiply(-0.5, np.square(np.subtract(z, y)))
+
+
 class Analysis:
-    def __init__(self, x, y, sigma=.04):
-        self.x = x
-        self.y = y
+    def __init__(self, centre, sigma=.04):
+        self.centre = centre
         self.sigma = sigma
 
     def log_likelihood_function(self, instance: Gaussian) -> np.array:
@@ -90,5 +89,4 @@ class Analysis:
         This function takes an instance created by the PriorModel and computes the
         likelihood that it fits the data.
         """
-        y_model = instance(self.x)
-        return np.sum(_likelihood(y_model, self.y) / self.sigma**2)
+        return -0.5 * ((instance.centre - self.centre) / self.sigma) ** 2
