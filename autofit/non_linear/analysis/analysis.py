@@ -61,7 +61,6 @@ class Analysis(ABC):
         
         This behaves analogously to overwriting the `visualize` function of the `Analysis` class, whereby the user 
         fills in the project-specific behaviour of the profiling.
-        
         Parameters
         ----------
         paths
@@ -256,6 +255,34 @@ class CombinedAnalysis(Analysis):
         self, samples, model, search
     ):
         return [analysis.make_result(samples, model, search) for analysis in self.analyses]
+
+
+    def profile_log_likelihood_function(
+            self,
+            paths: AbstractPaths,
+            instance,
+    ):
+        """
+        Profile the log likliehood function of the maximum likelihood model instance using each analysis.
+        Profiling output is distinguished by using an integer suffix for each analysis path.
+        Parameters
+        ----------
+        paths
+            An object describing the paths for saving data (e.g. hard-disk directories or entries in sqlite database).
+        instance
+            The maximum likliehood instance of the model so far in the non-linear search.
+        """
+
+        def func(child_paths, analysis):
+            analysis.profile_log_likelihood_function(
+                child_paths,
+                instance,
+            )
+
+        self._for_each_analysis(
+            func,
+            paths
+        )
 
     def __len__(self):
         return len(self.analyses)

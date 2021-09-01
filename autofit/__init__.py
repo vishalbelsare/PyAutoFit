@@ -12,7 +12,7 @@ from .non_linear.samples import StoredSamples
 from .database.aggregator import Aggregator
 from .database.model import Fit
 from .database.aggregator import Query
-from .database.model.fit import Fit
+from .database.model import Fit
 from .aggregator.search_output import SearchOutput
 from .mapper import link
 from .mapper import prior

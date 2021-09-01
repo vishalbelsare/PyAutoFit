@@ -30,7 +30,6 @@ class Analysis(af.Analysis):
 
         self.did_profile = True
 
-
 def test_visualise():
     analysis_1 = Analysis()
     analysis_2 = Analysis()
@@ -53,7 +52,6 @@ def test__profile_log_likelihood():
 
     assert analysis_1.did_profile is True
     assert analysis_2.did_profile is True
-
 
 def test_make_result():
 
