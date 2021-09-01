@@ -446,6 +446,8 @@ class NonLinearSearch(AbstractFactorOptimiser, ABC):
         self.paths.unique_tag = self.unique_tag
         self.paths.restore()
 
+        analysis = analysis.modify_before_fit(paths=self.paths, model=model)
+
         if not self.paths.is_complete or self.force_pickle_overwrite:
             self.logger.info(
                 "Saving path info"
@@ -487,11 +489,15 @@ class NonLinearSearch(AbstractFactorOptimiser, ABC):
                 self.paths.save_object("samples", samples)
                 analysis.save_results_for_aggregator(paths=self.paths, model=model, samples=samples)
 
+        result = analysis.make_result(samples=samples, model=model, search=self)
+
+        analysis = analysis.modify_after_fit(paths=self.paths, model=model, result=result)
+
         self.logger.info(
             "Removing zip file"
         )
         self.paths.zip_remove()
-        return analysis.make_result(samples=samples, model=model, search=self)
+        return result
 
     @abstractmethod
     def _fit(self, model, analysis, log_likelihood_cap=None):
