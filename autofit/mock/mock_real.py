@@ -49,7 +49,7 @@ class SphProfile(GeometryProfile):
 
 
 class EllProfile(SphProfile):
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, angle=0.0):
         """ Generic elliptical profiles class to contain functions shared by light
         and mass profiles.
 
@@ -59,12 +59,12 @@ class EllProfile(SphProfile):
             The (y,x) coordinates of the origin of the profiles
         axis_ratio
             Ratio of profiles ellipse's minor and major axes (b/a)
-        phi : float
+        angle : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllProfile, self).__init__(centre)
         self.axis_ratio = axis_ratio
-        self.phi = phi
+        self.angle = angle
 
 
 class MassProfile:
@@ -83,7 +83,7 @@ class MassProfile:
 
 # noinspection PyAbstractClass
 class EllMassProfile(EllProfile, MassProfile):
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, angle=0.0):
         """
         Abstract class for elliptical mass profiles.
 
@@ -93,12 +93,12 @@ class EllMassProfile(EllProfile, MassProfile):
             The origin of the profile
         axis_ratio
             Ellipse's minor-to-major axis ratio (b/a)
-        phi : float
+        angle : float
             Rotation angle of profile's ellipse counter-clockwise from positive x-axis
         """
-        super(EllMassProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
+        super(EllMassProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, angle=angle)
         self.axis_ratio = axis_ratio
-        self.phi = phi
+        self.angle = angle
 
 
 # noinspection PyAbstractClass
@@ -106,7 +106,8 @@ class EllIsothermalCored(EllProfile):
     def __init__(
             self,
             centre=(0.0, 0.0),
-            axis_ratio=1.0, phi=0.0,
+            axis_ratio=1.0,
+            angle=0.0,
             einstein_radius=1.0,
             core_radius=0.05,
     ):
@@ -121,7 +122,7 @@ class EllIsothermalCored(EllProfile):
             The image_grid of the origin of the profiles
         axis_ratio
             Ell mass profile's minor-to-major axis ratio (b/a)
-        phi : float
+        angle : float
             Rotation angle of mass profile's ellipse counter-clockwise from positive
             x-axis
         einstein_radius : float
@@ -131,7 +132,7 @@ class EllIsothermalCored(EllProfile):
         """
 
         super(EllIsothermalCored, self).__init__(
-            centre=centre, axis_ratio=axis_ratio, phi=phi,
+            centre=centre, axis_ratio=axis_ratio, angle=angle,
         )
         self.einstein_radius = einstein_radius
         self.core_radius = core_radius
@@ -142,7 +143,7 @@ class EllSersic(EllProfile):
             self,
             centre=(0.0, 0.0),
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
             intensity=0.1,
             effective_radius=0.6,
             sersic_index=4.0,
@@ -155,7 +156,7 @@ class EllSersic(EllProfile):
             The (y,x) origin of the light profile.
         axis_ratio
             Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
+        angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity
             Overall intensity normalisation of the light profiles (electrons per
@@ -166,7 +167,7 @@ class EllSersic(EllProfile):
             Controls the concentration of the of the light profile.
         """
         super().__init__(
-            centre=centre, axis_ratio=axis_ratio, phi=phi,
+            centre=centre, axis_ratio=axis_ratio, angle=angle,
         )
         self.intensity = intensity
         self.effective_radius = effective_radius
@@ -178,7 +179,7 @@ class EllSersicCore(EllSersic):
             self,
             centre=(0.0, 0.0),
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
             intensity=0.1,
             effective_radius=0.6,
             sersic_index=4.0,
@@ -196,7 +197,7 @@ class EllSersicCore(EllSersic):
             The (y,x) origin of the light profile.
         axis_ratio
             Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
+        angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity
             Overall intensity normalisation of the light profiles (electrons per
@@ -219,7 +220,7 @@ class EllSersicCore(EllSersic):
         super(EllSersicCore, self).__init__(
             centre=centre,
             axis_ratio=axis_ratio,
-            phi=phi,
+            angle=angle,
             intensity=intensity,
             effective_radius=effective_radius,
             sersic_index=sersic_index
@@ -235,7 +236,7 @@ class EllExponential(EllSersic):
             self,
             centre=(0.0, 0.0),
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
             intensity=0.1,
             effective_radius=0.6,
     ):
@@ -250,7 +251,7 @@ class EllExponential(EllSersic):
             The (y,x) origin of the light profile.
         axis_ratio
             Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
+        angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity
             Overall intensity normalisation of the light profiles (electrons per
@@ -261,7 +262,7 @@ class EllExponential(EllSersic):
         super(EllExponential, self).__init__(
             centre=centre,
             axis_ratio=axis_ratio,
-            phi=phi,
+            angle=angle,
             intensity=intensity,
             effective_radius=effective_radius,
             sersic_index=1.0
@@ -272,7 +273,7 @@ class EllExponential(EllSersic):
 class EllGaussian(EllProfile):
 
     def __init__(
-            self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01
+            self, centre=(0.0, 0.0), axis_ratio=1.0, angle=0.0, intensity=0.1, sigma=0.01
     ):
         """ The elliptical Gaussian profile.
 
@@ -282,7 +283,7 @@ class EllGaussian(EllProfile):
             The (y,x) origin of the light profile.
         axis_ratio
             Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
+        angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity
             Overall intensity normalisation of the light profiles (electrons per
@@ -290,7 +291,7 @@ class EllGaussian(EllProfile):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(EllGaussian, self).__init__(centre, axis_ratio, phi)
+        super(EllGaussian, self).__init__(centre, axis_ratio, angle)
 
         self.intensity = intensity
         self.sigma = sigma
