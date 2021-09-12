@@ -15,7 +15,7 @@
                 "upper": "inf"
             }
         },
-        "intensity": {
+        "normalization": {
             "type": "Gaussian",
             "lower_limit": 1e-06,
             "upper_limit": 1000000.0,

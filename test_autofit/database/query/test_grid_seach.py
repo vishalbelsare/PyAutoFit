@@ -108,17 +108,17 @@ def test_model_order_no_complicated():
     model_1 = af.Model(
         Gaussian,
         centre=1.0,
-        intensity=af.UniformPrior(0.0, 1.0)
+        normalization=af.UniformPrior(0.0, 1.0)
     )
     model_2 = af.Model(
         Gaussian,
         centre=2.0,
-        intensity=af.UniformPrior(0.0, 0.5)
+        normalization=af.UniformPrior(0.0, 0.5)
     )
     model_3 = af.Model(
         Gaussian,
         centre=2.0,
-        intensity=af.UniformPrior(0.0, 1.0)
+        normalization=af.UniformPrior(0.0, 1.0)
     )
 
     assert model_1.order_no < model_2.order_no < model_3.order_no

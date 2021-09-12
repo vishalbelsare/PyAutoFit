@@ -13,7 +13,7 @@
         "upper": 1.0
       }
     },
-    "intensity": {
+    "normalization": {
       "type": "Uniform",
       "lower_limit": 0.0,
       "upper_limit": 1.0,

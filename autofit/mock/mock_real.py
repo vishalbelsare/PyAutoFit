@@ -144,7 +144,7 @@ class EllSersic(EllProfile):
             centre=(0.0, 0.0),
             axis_ratio=1.0,
             angle=0.0,
-            intensity=0.1,
+            normalization=0.1,
             effective_radius=0.6,
             sersic_index=4.0,
     ):
@@ -158,8 +158,8 @@ class EllSersic(EllProfile):
             Ratio of light profiles ellipse's minor and major axes (b/a).
         angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
-        intensity
-            Overall intensity normalisation of the light profiles (electrons per
+        normalization
+            Overall normalization normalisation of the light profiles (electrons per
             second).
         effective_radius
             The circular radius containing half the light of this profile.
@@ -169,7 +169,7 @@ class EllSersic(EllProfile):
         super().__init__(
             centre=centre, axis_ratio=axis_ratio, angle=angle,
         )
-        self.intensity = intensity
+        self.normalization = normalization
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
 
@@ -180,11 +180,11 @@ class EllSersicCore(EllSersic):
             centre=(0.0, 0.0),
             axis_ratio=1.0,
             angle=0.0,
-            intensity=0.1,
+            normalization=0.1,
             effective_radius=0.6,
             sersic_index=4.0,
             radius_break=0.01,
-            intensity_break=0.05,
+            normalization_break=0.05,
             gamma=0.25,
             alpha=3.0,
     ):
@@ -199,8 +199,8 @@ class EllSersicCore(EllSersic):
             Ratio of light profiles ellipse's minor and major axes (b/a).
         angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
-        intensity
-            Overall intensity normalisation of the light profiles (electrons per
+        normalization
+            Overall normalization normalisation of the light profiles (electrons per
             second).
         effective_radius
             The circular radius containing half the light of this profile.
@@ -209,8 +209,8 @@ class EllSersicCore(EllSersic):
         radius_break : Float
             The break radius separating the inner power-law (with logarithmic slope
             gamma) and outer Sersic function.
-        intensity_break : Float
-            The intensity at the break radius.
+        normalization_break : Float
+            The normalization at the break radius.
         gamma : Float
             The logarithmic power-law slope of the inner core profiles
         alpha :
@@ -221,12 +221,12 @@ class EllSersicCore(EllSersic):
             centre=centre,
             axis_ratio=axis_ratio,
             angle=angle,
-            intensity=intensity,
+            normalization=normalization,
             effective_radius=effective_radius,
             sersic_index=sersic_index
         )
         self.radius_break = radius_break
-        self.intensity_break = intensity_break
+        self.normalization_break = normalization_break
         self.alpha = alpha
         self.gamma = gamma
 
@@ -237,7 +237,7 @@ class EllExponential(EllSersic):
             centre=(0.0, 0.0),
             axis_ratio=1.0,
             angle=0.0,
-            intensity=0.1,
+            normalization=0.1,
             effective_radius=0.6,
     ):
         """ The elliptical exponential profile, used for fitting a model_galaxy's light.
@@ -253,8 +253,8 @@ class EllExponential(EllSersic):
             Ratio of light profiles ellipse's minor and major axes (b/a).
         angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
-        intensity
-            Overall intensity normalisation of the light profiles (electrons per
+        normalization
+            Overall normalization normalisation of the light profiles (electrons per
             second).
         effective_radius
             The circular radius containing half the light of this profile.
@@ -263,7 +263,7 @@ class EllExponential(EllSersic):
             centre=centre,
             axis_ratio=axis_ratio,
             angle=angle,
-            intensity=intensity,
+            normalization=normalization,
             effective_radius=effective_radius,
             sersic_index=1.0
         )
@@ -273,7 +273,7 @@ class EllExponential(EllSersic):
 class EllGaussian(EllProfile):
 
     def __init__(
-            self, centre=(0.0, 0.0), axis_ratio=1.0, angle=0.0, intensity=0.1, sigma=0.01
+            self, centre=(0.0, 0.0), axis_ratio=1.0, angle=0.0, normalization=0.1, sigma=0.01
     ):
         """ The elliptical Gaussian profile.
 
@@ -285,15 +285,15 @@ class EllGaussian(EllProfile):
             Ratio of light profiles ellipse's minor and major axes (b/a).
         angle : float
             Rotation angle of light profile counter-clockwise from positive x-axis.
-        intensity
-            Overall intensity normalisation of the light profiles (electrons per
+        normalization
+            Overall normalization normalisation of the light profiles (electrons per
             second).
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
         super(EllGaussian, self).__init__(centre, axis_ratio, angle)
 
-        self.intensity = intensity
+        self.normalization = normalization
         self.sigma = sigma
 
 

@@ -159,14 +159,14 @@ def test_missing_field():
 def test_change_class():
     gaussian_0 = af.Model(
         af.Gaussian,
-        intensity=af.UniformPrior(
+        normalization=af.UniformPrior(
             lower_limit=1e-6,
             upper_limit=1e6
         )
     )
     gaussian_1 = af.Model(
         af.Gaussian,
-        intensity=af.LogUniformPrior(
+        normalization=af.LogUniformPrior(
             lower_limit=1e-6,
             upper_limit=1e6
         )

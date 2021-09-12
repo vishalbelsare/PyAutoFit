@@ -719,7 +719,7 @@ class Testinstance:
         prior_model.centre_1 = 2.0
         prior_model.axis_ratio = 1.0
         prior_model.angle = 1.0
-        prior_model.intensity = 1.0
+        prior_model.normalization = 1.0
         prior_model.effective_radius = 1.0
         prior_model.sersic_index = 1.0
         instance = prior_model.instance_for_arguments({})
